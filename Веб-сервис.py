@@ -13,7 +13,7 @@ model = joblib.load(io.BytesIO(response.content))
 
 app = Flask(__name__)
 #CORS(app)
-
+ 
 CORS(app, resources={
     r"/predict": {
         "origins": "*",
