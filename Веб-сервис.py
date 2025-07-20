@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
 import joblib
 import requests
@@ -11,6 +12,16 @@ response.raise_for_status()
 model = joblib.load(io.BytesIO(response.content))
 
 app = Flask(__name__)
+#CORS(app)
+
+CORS(app, resources={
+    r"/predict": {
+        "origins": "*",
+        "methods": ["OPTIONS", "POST"],
+        "allow_headers": ["Content-Type"]
+    }
+})
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
