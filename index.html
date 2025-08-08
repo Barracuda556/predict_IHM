@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-ST-segment elevation acute coronary syndrome in-hospital mortality calculator</title>
+    <title>Калькулятор внутригоспитальной и 30-дневной летальности при остром коронарном синдроме без подъема сегмента ST</title>
     <style>
         body { 
             font-family: Arial, sans-serif;
@@ -19,6 +19,7 @@
             background-color: #f9f9f9;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
         }
         h1 {
             text-align: center;
@@ -84,148 +85,251 @@
             margin-top: 5px;
             display: none;
         }
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .lang-btn:hover {
+            background-color: #ddd;
+        }
+        .lang-ru {
+            display: block;
+        }
+        .lang-en {
+            display: none;
+        }
+        body.lang-en .lang-ru {
+            display: none;
+        }
+        body.lang-en .lang-en {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Non-ST-segment elevation acute coronary syndrome in-hospital mortality calculator</h1>
+        <div class="lang-switcher">
+            <button class="lang-btn" onclick="switchLanguage('ru')">RU</button>
+            <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+        </div>
+        
+        <h1 class="lang-ru">Калькулятор внутригоспитальной и 30-дневной летальности при остром коронарном синдроме без подъема сегмента ST</h1>
+        <h1 class="lang-en">Non-ST-segment elevation acute coronary syndrome in-hospital mortality calculator</h1>
         
         <!-- Модель 1 -->
         <div class="model-section" id="model1-section">
-            <h2 class="model-title">Upon admission</h2>
+            <h2 class="model-title lang-ru">Поступление в стационар</h2>
+            <h2 class="model-title lang-en">Upon admission</h2>
             <div class="form-group">
-                <label for="age">Age <span class="units">(years)</span>:</label>
+                <label for="age" class="lang-ru">Возраст <span class="units">(лет)</span>:</label>
+                <label for="age" class="lang-en">Age <span class="units">(years)</span>:</label>
                 <input type="number" id="age" name="age" min="18" max="120">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="killip">Acute Heart Failure (AHF):</label>
+                <label for="killip" class="lang-ru">Класс Killip:</label>
+                <label for="killip" class="lang-en">Acute Heart Failure (AHF):</label>
                 <select id="killip" name="killip">
-                    <option value="">-- Select --</option>
-                    <option value="1">I (no AHF)</option>
-                    <option value="2">II (rales and/or jugular vein distention (JVD))</option>
-                    <option value="3">III (pulmonary edema)</option>
-                    <option value="4">IV (cardiogenic shock)</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="1" class="lang-ru">I класс</option>
+                    <option value="1" class="lang-en">I (no AHF)</option>
+                    <option value="2" class="lang-ru">II класс</option>
+                    <option value="2" class="lang-en">II (rales and/or jugular vein distention (JVD))</option>
+                    <option value="3" class="lang-ru">III класс</option>
+                    <option value="3" class="lang-en">III (pulmonary edema)</option>
+                    <option value="4" class="lang-ru">IV класс</option>
+                    <option value="4" class="lang-en">IV (cardiogenic shock)</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="sad">Systolic Blood Pressure <span class="units">(mmHg)</span>:</label>
+                <label for="sad" class="lang-ru">САД <span class="units">(мм рт.ст., при поступлении)</span>:</label>
+                <label for="sad" class="lang-en">Systolic Blood Pressure <span class="units">(mmHg)</span>:</label>
                 <input type="number" id="sad" name="sad" min="50" max="250">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="heartRate">Heart Rate <span class="units">(Beats Per Minute (BPM))</span>:</label>
+                <label for="heartRate" class="lang-ru">ЧСС <span class="units">(уд/мин, при поступлении)</span>:</label>
+                <label for="heartRate" class="lang-en">Heart Rate <span class="units">(Beats Per Minute (BPM))</span>:</label>
                 <input type="number" id="heartRate" name="heartRate" min="30" max="200">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="bmi">Body Mass Index (BMI) <span class="units">(kg/m²)</span>:</label>
+                <label for="bmi" class="lang-ru">ИМТ <span class="units">(кг/м²)</span>:</label>
+                <label for="bmi" class="lang-en">Body Mass Index (BMI) <span class="units">(kg/m²)</span>:</label>
                 <input type="number" id="bmi" name="bmi" step="0.1" min="10" max="50">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="communityPneumonia">Community-Acquired Pneumonia (CAP):</label>
+                <label for="communityPneumonia" class="lang-ru">Внебольничная пневмония:</label>
+                <label for="communityPneumonia" class="lang-en">Community-Acquired Pneumonia (CAP):</label>
                 <select id="communityPneumonia" name="communityPneumonia">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-		    <option value="None">Unknown</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
+                    <option value="None" class="lang-ru">Неизвестно</option>
+                    <option value="None" class="lang-en">Unknown</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="weakness">Signs of weakness:</label>
+                <label for="weakness" class="lang-ru">Симптомы слабости:</label>
+                <label for="weakness" class="lang-en">Signs of weakness:</label>
                 <select id="weakness" name="weakness">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="charlson">Charlson Comorbidity Index (CCI) <span class="units">(scores)</span>:</label>
+                <label for="charlson" class="lang-ru">Индекс коморбидности Чарлсона <span class="units">(баллы)</span>:</label>
+                <label for="charlson" class="lang-en">Charlson Comorbidity Index (CCI) <span class="units">(scores)</span>:</label>
                 <input type="number" id="charlson" name="charlson" min="0" max="30">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="familyHistory">Family History of Cardiovascular Disease (FHCD):</label>
+                <label for="familyHistory" class="lang-ru">Отягощенная наследственность по ССЗ:</label>
+                <label for="familyHistory" class="lang-en">Family History of Cardiovascular Disease (FHCD):</label>
                 <select id="familyHistory" name="familyHistory">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="dryWheezing">Dry crackles:</label>
+                <label for="dryWheezing" class="lang-ru">Сухие хрипы:</label>
+                <label for="dryWheezing" class="lang-en">Dry crackles:</label>
                 <select id="dryWheezing" name="dryWheezing">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="consciousnessLoss">Syncope:</label>
+                <label for="consciousnessLoss" class="lang-ru">Потеря сознания:</label>
+                <label for="consciousnessLoss" class="lang-en">Syncope:</label>
                 <select id="consciousnessLoss" name="consciousnessLoss">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
-            <button class="btn" onclick="calculate(1)">Calculate</button>
+            <button class="btn lang-ru" onclick="calculate(1)">Рассчитать</button>
+            <button class="btn lang-en" onclick="calculate(1)">Calculate</button>
         </div>
         
         <!-- Модель 2 -->
         <div class="model-section" id="model2-section">
-            <h2 class="model-title">Laboratory data</h2>
+            <h2 class="model-title lang-ru">После лабораторных исследований</h2>
+            <h2 class="model-title lang-en">Laboratory data</h2>
             <div class="form-group">
-                <label for="creatinine">Creatinine <span class="units">(µmol/l)</span>:</label>
+                <label for="creatinine" class="lang-ru">Креатинин <span class="units">(мкмоль/л)</span>:</label>
+                <label for="creatinine" class="lang-en">Creatinine <span class="units">(µmol/l)</span>:</label>
                 <input type="number" id="creatinine" name="creatinine" step="0.1" min="20" max="1000">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
             <div class="form-group">
-                <label for="hematocrit">Hematocrit <span class="units">(%)</span>:</label>
+                <label for="hematocrit" class="lang-ru">Гематокрит <span class="units">(%)</span>:</label>
+                <label for="hematocrit" class="lang-en">Hematocrit <span class="units">(%)</span>:</label>
                 <input type="number" id="hematocrit" name="hematocrit" step="0.1" min="10" max="60">
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
-            <button class="btn" onclick="calculate(2)">Calculate</button>
+            <button class="btn lang-ru" onclick="calculate(2)">Рассчитать</button>
+            <button class="btn lang-en" onclick="calculate(2)">Calculate</button>
         </div>
         
         <!-- Модель 3 -->
         <div class="model-section" id="model3-section">
-            <h2 class="model-title">Instrumental data</h2>
+            <h2 class="model-title lang-ru">После ЭхоКГ сердца</h2>
+            <h2 class="model-title lang-en">Instrumental data</h2>
             <div class="form-group">
-                <label for="lvDysfunction">Left ventricular systolic dysfunction (left ventricular ejection fraction (LVEF) ≤ 49%):</label>
+                <label for="lvDysfunction" class="lang-ru">Систолическая дисфункция левого желудочка (снижение фракции выброса ≤49%):</label>
+                <label for="lvDysfunction" class="lang-en">Left ventricular systolic dysfunction (left ventricular ejection fraction (LVEF) ≤ 49%):</label>
                 <select id="lvDysfunction" name="lvDysfunction">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
-            <button class="btn" onclick="calculate(3)">Calculate</button>
+            <button class="btn lang-ru" onclick="calculate(3)">Рассчитать</button>
+            <button class="btn lang-en" onclick="calculate(3)">Calculate</button>
         </div>
         
         <!-- Модель 4 -->
         <div class="model-section" id="model4-section">
-            <h2 class="model-title">During hospitalization</h2>
+            <h2 class="model-title lang-ru">В процессе госпитализации</h2>
+            <h2 class="model-title lang-en">During hospitalization</h2>
             <div class="form-group">
-                <label for="hospitalPneumonia">Hospital-Acquired Pneumonia (HAP):</label>
+                <label for="hospitalPneumonia" class="lang-ru">Внутрибольничная пневмония:</label>
+                <label for="hospitalPneumonia" class="lang-en">Hospital-Acquired Pneumonia (HAP):</label>
                 <select id="hospitalPneumonia" name="hospitalPneumonia">
-                    <option value="">-- Select --</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="">-- <span class="lang-ru">Выберите</span><span class="lang-en">Select</span> --</option>
+                    <option value="0" class="lang-ru">Нет</option>
+                    <option value="0" class="lang-en">No</option>
+                    <option value="1" class="lang-ru">Да</option>
+                    <option value="1" class="lang-en">Yes</option>
                 </select>
-                <div class="error-message">This field is required</div>
+                <div class="error-message lang-ru">Поле обязательно для заполнения</div>
+                <div class="error-message lang-en">This field is required</div>
             </div>
-            <button class="btn" onclick="calculate(4)">Calculate</button>
+            <button class="btn lang-ru" onclick="calculate(4)">Рассчитать</button>
+            <button class="btn lang-en" onclick="calculate(4)">Calculate</button>
         </div>
     </div>
 
     <script>
+        function switchLanguage(lang) {
+            document.body.className = lang === 'en' ? 'lang-en' : '';
+            // Сохраняем выбор языка в localStorage
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Проверяем сохраненный язык при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const preferredLanguage = localStorage.getItem('preferredLanguage') || 'ru';
+            switchLanguage(preferredLanguage);
+        });
+
         function calculate(modelNumber) {
             // Собираем данные для всех требуемых моделей
             let data = {};
@@ -264,7 +368,10 @@
             }
 
             if (!isValid) {
-                alert('Пожалуйста, заполните все обязательные поля для выбранных моделей');
+                const errorMessage = document.body.classList.contains('lang-en') ? 
+                    'Please fill in all required fields for the selected models' : 
+                    'Пожалуйста, заполните все обязательные поля для выбранных моделей';
+                alert(errorMessage);
                 return;
             }
 
@@ -281,16 +388,16 @@
 
             fields.forEach(field => {
                 const element = document.getElementById(field.id);
-                const errorElement = element.nextElementSibling;
+                const errorElements = element.parentNode.querySelectorAll('.error-message');
                 
                 // Проверяем, заполнено ли поле
                 if (!element.value || (element.type === 'number' && isNaN(element.value))) {
                     element.classList.add('error');
-                    errorElement.style.display = 'block';
+                    errorElements.forEach(el => el.style.display = 'block');
                     isValid = false;
                 } else {
                     element.classList.remove('error');
-                    errorElement.style.display = 'none';
+                    errorElements.forEach(el => el.style.display = 'none');
                 }
             });
 
@@ -388,7 +495,10 @@
             });
             */
             
-            alert(`Data for model ${data.targetModel} sent to server.\n`);
+            const message = document.body.classList.contains('lang-en') ? 
+                `Data for model ${data.targetModel} sent to server.\n` : 
+                `Данные для моделей 1-${data.targetModel} отправлены на сервер.\nПроверьте консоль для деталей.`;
+            alert(message);
         }
 
         // Добавляем обработчики для сброса ошибок при вводе
@@ -396,10 +506,8 @@
             element.addEventListener('input', function() {
                 if (this.classList.contains('error')) {
                     this.classList.remove('error');
-                    const errorElement = this.nextElementSibling;
-                    if (errorElement && errorElement.classList.contains('error-message')) {
-                        errorElement.style.display = 'none';
-                    }
+                    const errorElements = this.parentNode.querySelectorAll('.error-message');
+                    errorElements.forEach(el => el.style.display = 'none');
                 }
             });
         });
