@@ -3,380 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Медицинский калькулятор риска 30-дневной внутригоспитальной летальности</title>
+    <title>Калькулятор внутригоспитальной и 30-дневной летальности</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         h1 {
-            color: #2c3e50;
             text-align: center;
+            color: #2c3e50;
             margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-        }
-        .form-container {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
         }
-        label {
+        .form-group label {
             width: 350px;
+            margin-right: 10px;
             font-weight: bold;
-            color: #34495e;
         }
-        input, select {
-            padding: 10px;
+        input[type="number"] {
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            flex: 1;
-            font-size: 16px;
-            transition: border 0.3s;
+            border-radius: 4px;
+            width: 100px;
         }
-        input:focus, select:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 120px;
         }
-        button {
+        .btn {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
+            padding: 10px 15px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin: 20px 0;
             display: block;
-            margin: 25px auto;
-            transition: all 0.3s;
-            width: 200px;
-            text-align: center;
         }
-        button:hover {
+        .btn:hover {
             background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #e8f4fc, #d4e6f1);
-            display: none;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid #bdc3c7;
-        }
-        .result h2 {
-            color: #2c3e50;
-            margin-top: 0;
+        .model-section {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 20px;
             margin-bottom: 20px;
         }
-        .probability {
-            font-size: 36px;
-            font-weight: bold;
-            color: #e74c3c;
-            margin: 15px 0;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            display: inline-block;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .model-title {
+            color: #3498db;
+            margin-bottom: 15px;
         }
-        .interpretation {
-            font-size: 18px;
-            color: #34495e;
-            margin-top: 15px;
+        .units {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 5px;
         }
         .error {
-            color: #e74c3c;
-            margin-top: 10px;
-            text-align: center;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #fdecea;
+            border-color: red !important;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
             display: none;
-        }
-        .loading {
-            text-align: center;
-            margin: 20px 0;
-            display: none;
-        }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <h1>Медицинский калькулятор риска 30-дневной внутригоспитальной летальности</h1>
-    
-    <div class="form-container">
-        <div class="form-group">
-            <label for="age">Возраст:</label>
-            <input type="number" id="age" min="0" max="120" required>
+    <div class="container">
+        <h1>Калькулятор внутригоспитальной и 30-дневной летальности</h1>
+        
+        <!-- Модель 1 -->
+        <div class="model-section" id="model1-section">
+            <h2 class="model-title">Поступление в стационар</h2>
+            <div class="form-group">
+                <label for="age">Возраст <span class="units">(лет)</span>:</label>
+                <input type="number" id="age" name="age" min="18" max="120">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="killip">Класс Killip:</label>
+                <select id="killip" name="killip">
+                    <option value="">-- Выберите --</option>
+                    <option value="1">I класс</option>
+                    <option value="2">II класс</option>
+                    <option value="3">III класс</option>
+                    <option value="4">IV класс</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="sad">САД <span class="units">(мм рт.ст., при поступлении)</span>:</label>
+                <input type="number" id="sad" name="sad" min="50" max="250">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="heartRate">ЧСС <span class="units">(уд/мин, при поступлении)</span>:</label>
+                <input type="number" id="heartRate" name="heartRate" min="30" max="200">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="bmi">ИМТ <span class="units">(кг/м²)</span>:</label>
+                <input type="number" id="bmi" name="bmi" step="0.1" min="10" max="50">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="communityPneumonia">Внебольничная пневмония:</label>
+                <select id="communityPneumonia" name="communityPneumonia">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+		    <option value="None">Неизвестно</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="weakness">Слабость:</label>
+                <select id="weakness" name="weakness">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="charlson">Индекс коморбидности Чарлсона <span class="units">(баллы)</span>:</label>
+                <input type="number" id="charlson" name="charlson" min="0" max="30">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="familyHistory">Наследственность по ССЗ отягощена:</label>
+                <select id="familyHistory" name="familyHistory">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="dryWheezing">Сухие хрипы в легких:</label>
+                <select id="dryWheezing" name="dryWheezing">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="consciousnessLoss">Потеря сознания:</label>
+                <select id="consciousnessLoss" name="consciousnessLoss">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <button class="btn" onclick="calculate(1)">Рассчитать</button>
         </div>
         
-        <div class="form-group">
-            <label for="heartRate">ЧСС Уд/мин (при поступлении):</label>
-            <input type="number" id="heartRate" min="0" max="300" required>
+        <!-- Модель 2 -->
+        <div class="model-section" id="model2-section">
+            <h2 class="model-title">После лабораторных исследований</h2>
+            <div class="form-group">
+                <label for="creatinine">Креатинин <span class="units">(мкмоль/л)</span>:</label>
+                <input type="number" id="creatinine" name="creatinine" step="0.1" min="20" max="1000">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <div class="form-group">
+                <label for="hematocrit">Гематокрит <span class="units">(%)</span>:</label>
+                <input type="number" id="hematocrit" name="hematocrit" step="0.1" min="10" max="60">
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <button class="btn" onclick="calculate(2)">Рассчитать</button>
         </div>
         
-        <div class="form-group">
-            <label for="bloodPressure">САД мм рт ст (при поступлении):</label>
-            <input type="number" id="bloodPressure" min="0" max="300" required>
+        <!-- Модель 3 -->
+        <div class="model-section" id="model3-section">
+            <h2 class="model-title">После ЭхоКГ сердца</h2>
+            <div class="form-group">
+                <label for="lvDysfunction">СДЛЖ:</label>
+                <select id="lvDysfunction" name="lvDysfunction">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <button class="btn" onclick="calculate(3)">Рассчитать</button>
         </div>
         
-        <div class="form-group">
-            <label for="creatinine">Креатинин мкмоль/л (при поступлении):</label>
-            <input type="number" id="creatinine" min="0" step="0.1" required>
+        <!-- Модель 4 -->
+        <div class="model-section" id="model4-section">
+            <h2 class="model-title">В процессе госпитализации</h2>
+            <div class="form-group">
+                <label for="hospitalPneumonia">Внутрибольничная пневмония:</label>
+                <select id="hospitalPneumonia" name="hospitalPneumonia">
+                    <option value="">-- Выберите --</option>
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>
+                <div class="error-message">Поле обязательно для заполнения</div>
+            </div>
+            <button class="btn" onclick="calculate(4)">Рассчитать</button>
         </div>
-        
-        <div class="form-group">
-            <label for="killipClass">Класс Killip:</label>
-            <select id="killipClass" required>
-                <option value="">Выберите класс...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="ckdStage">ХБП стадии (4-5):</label>
-            <select id="ckdStage" required>
-                <option value="">Выберите стадию...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="hemoglobin">Гемоглобин г/л (при поступлении):</label>
-            <input type="number" id="hemoglobin" min="0" max="300" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="pneumonia">Внебольничная пневмония:</label>
-            <select id="pneumonia" required>
-                <option value="">Выберите значение...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="pneumoniaSeverity">Степень тяжести внебольничной пневмонии:</label>
-            <select id="pneumoniaSeverity" required>
-                <option value="">Выберите степень...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="otherPain">Боли иной локализации:</label>
-            <select id="otherPain" required>
-                <option value="">Выберите значение...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="charlsonIndex">Индекс коморбидности Чарлсона, баллы:</label>
-            <select id="charlsonIndex" required>
-                <option value="">Выберите значение...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="atherosclerosis">Стенозирующий периферический атеросклероз:</label>
-            <select id="atherosclerosis" required>
-                <option value="">Выберите значение...</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-            </select>
-        </div>
-        
-        <button id="calculateBtn">Рассчитать</button>
-        <div class="loading" id="loadingIndicator">
-            <div class="spinner"></div>
-            <p>Идет расчет...</p>
-        </div>
-        <div class="error" id="errorMessage"></div>
     </div>
-    
-    <div class="result" id="resultContainer">
-        <h2>Вероятность неблагоприятного исхода</h2>
-        <div class="probability" id="probabilityValue"></div>
-        <div class="interpretation" id="interpretationText"></div>
-    </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calculateBtn = document.getElementById('calculateBtn');
-            const resultContainer = document.getElementById('resultContainer');
-            const probabilityValue = document.getElementById('probabilityValue');
-            const interpretationText = document.getElementById('interpretationText');
-            const errorMessage = document.getElementById('errorMessage');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            
-            calculateBtn.addEventListener('click', function() {
-                // Собираем данные из формы
-                const formData = [
-                    parseFloat(document.getElementById('age').value),
-                    parseFloat(document.getElementById('heartRate').value),
-                    parseFloat(document.getElementById('bloodPressure').value),
-                    parseFloat(document.getElementById('creatinine').value),
-                    parseFloat(document.getElementById('killipClass').value),
-                    parseFloat(document.getElementById('ckdStage').value),
-                    parseFloat(document.getElementById('hemoglobin').value),
-                    parseFloat(document.getElementById('pneumonia').value),
-                    parseFloat(document.getElementById('pneumoniaSeverity').value),
-                    parseFloat(document.getElementById('otherPain').value),
-                    parseFloat(document.getElementById('charlsonIndex').value),
-                    parseFloat(document.getElementById('atherosclerosis').value)
-                ];
-                
-                // Проверяем, что все поля заполнены
-                for (const value of formData) {
-                    if (isNaN(value)) {
-                        showError('Пожалуйста, заполните все поля формы');
-                        return;
-                    }
-                }
-                
-                // Показываем индикатор загрузки
-                loadingIndicator.style.display = 'block';
-                calculateBtn.disabled = true;
-                errorMessage.style.display = 'none';
-                resultContainer.style.display = 'none';
-                
-                // Отправляем данные на бэкенд
-                sendDataToBackend(formData);
-            });
-            
-            function sendDataToBackend(featuresArray) {
-                const requestData = {
-                    features: featuresArray
-                };
-                
-                fetch('https://predict-ihm.onrender.com/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Скрываем индикатор загрузки
-                    loadingIndicator.style.display = 'none';
-                    calculateBtn.disabled = false;
-                    
-                    // Обрабатываем успешный ответ
-                    if (data.probability !== undefined) {
-                        const probability = data.probability;
-                        const roundedProbability = Math.round(probability * 10000) / 10000;
-                        
-                        // Отображаем результат
-                        probabilityValue.textContent = roundedProbability;
-                        setInterpretation(probability);
-                        resultContainer.style.display = 'block';
-                    } else {
-                        showError('Неверный формат ответа от сервера');
-                    }
-                })
-                .catch(error => {
-                    // Обрабатываем ошибку
-                    loadingIndicator.style.display = 'none';
-                    calculateBtn.disabled = false;
-                    showError('Ошибка при отправке данных: ' + error.message);
-                    console.error('Error:', error);
-                });
+        function calculate(modelNumber) {
+            // Собираем данные для всех требуемых моделей
+            let data = {};
+            let isValid = true;
+
+            // Проверяем и собираем данные для модели 1 (всегда требуется)
+            if (!validateModel(1)) {
+                isValid = false;
+            } else {
+                data.model1 = getModel1Data();
             }
-            
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-                resultContainer.style.display = 'none';
-            }
-            
-            function setInterpretation(probability) {
-                let interpretation = '';
-                const percent = Math.round(probability * 100);
-                
-                if (probability < 0.1) {
-                    interpretation = `Низкий риск (${percent}%)`;
-                } else if (probability < 0.3) {
-                    interpretation = `Умеренный риск (${percent}%)`;
-                } else if (probability < 0.5) {
-                    interpretation = `Высокий риск (${percent}%)`;
+
+            // Если запрошены модели 2-4, проверяем и их
+            if (modelNumber >= 2) {
+                if (!validateModel(2)) {
+                    isValid = false;
                 } else {
-                    interpretation = `Очень высокий риск (${percent}%)`;
+                    data.model2 = getModel2Data();
                 }
-                
-                interpretationText.textContent = interpretation;
             }
+
+            if (modelNumber >= 3) {
+                if (!validateModel(3)) {
+                    isValid = false;
+                } else {
+                    data.model3 = getModel3Data();
+                }
+            }
+
+            if (modelNumber >= 4) {
+                if (!validateModel(4)) {
+                    isValid = false;
+                } else {
+                    data.model4 = getModel4Data();
+                }
+            }
+
+            if (!isValid) {
+                alert('Пожалуйста, заполните все обязательные поля для выбранных моделей');
+                return;
+            }
+
+            // Добавляем номер целевой модели
+            data.targetModel = modelNumber;
+            
+            // Отправляем данные на сервер
+            sendData(data);
+        }
+
+        function validateModel(modelNumber) {
+            let isValid = true;
+            const fields = getModelFields(modelNumber);
+
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const errorElement = element.nextElementSibling;
+                
+                // Проверяем, заполнено ли поле
+                if (!element.value || (element.type === 'number' && isNaN(element.value))) {
+                    element.classList.add('error');
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    element.classList.remove('error');
+                    errorElement.style.display = 'none';
+                }
+            });
+
+            return isValid;
+        }
+
+        function getModelFields(modelNumber) {
+            switch(modelNumber) {
+                case 1:
+                    return [
+                        {id: 'age', type: 'number'},
+                        {id: 'killip', type: 'select'},
+                        {id: 'sad', type: 'number'},
+                        {id: 'heartRate', type: 'number'},
+                        {id: 'bmi', type: 'number'},
+                        {id: 'communityPneumonia', type: 'select'},
+                        {id: 'weakness', type: 'select'},
+                        {id: 'charlson', type: 'number'},
+                        {id: 'familyHistory', type: 'select'},
+                        {id: 'dryWheezing', type: 'select'},
+                        {id: 'consciousnessLoss', type: 'select'}
+                    ];
+                case 2:
+                    return [
+                        {id: 'creatinine', type: 'number'},
+                        {id: 'hematocrit', type: 'number'}
+                    ];
+                case 3:
+                    return [
+                        {id: 'lvDysfunction', type: 'select'}
+                    ];
+                case 4:
+                    return [
+                        {id: 'hospitalPneumonia', type: 'select'}
+                    ];
+                default:
+                    return [];
+            }
+        }
+
+        function getModel1Data() {
+            return {
+                age: parseInt(document.getElementById('age').value),
+                killip: parseInt(document.getElementById('killip').value),
+                sad: parseInt(document.getElementById('sad').value),
+                heartRate: parseInt(document.getElementById('heartRate').value),
+                bmi: parseFloat(document.getElementById('bmi').value),
+                communityPneumonia: parseInt(document.getElementById('communityPneumonia').value),
+                weakness: parseInt(document.getElementById('weakness').value),
+                charlson: parseInt(document.getElementById('charlson').value),
+                familyHistory: parseInt(document.getElementById('familyHistory').value),
+                dryWheezing: parseInt(document.getElementById('dryWheezing').value),
+                consciousnessLoss: parseInt(document.getElementById('consciousnessLoss').value)
+            };
+        }
+
+        function getModel2Data() {
+            return {
+                creatinine: parseFloat(document.getElementById('creatinine').value),
+                hematocrit: parseFloat(document.getElementById('hematocrit').value)
+            };
+        }
+
+        function getModel3Data() {
+            return {
+                lvDysfunction: parseInt(document.getElementById('lvDysfunction').value)
+            };
+        }
+
+        function getModel4Data() {
+            return {
+                hospitalPneumonia: parseInt(document.getElementById('hospitalPneumonia').value)
+            };
+        }
+
+        function sendData(data) {
+            console.log('Отправка данных на сервер:', data);
+            
+            // Здесь будет реальная отправка данных на сервер
+            // Пример:
+            /*
+            fetch('/api/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                console.log("Результат:", responseData);
+                alert(`Результат расчета: ${responseData.result}`);
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при расчете');
+            });
+            */
+            
+            alert(`Данные для моделей 1-${data.targetModel} отправлены на сервер.\nПроверьте консоль для деталей.`);
+        }
+
+        // Добавляем обработчики для сброса ошибок при вводе
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('input', function() {
+                if (this.classList.contains('error')) {
+                    this.classList.remove('error');
+                    const errorElement = this.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('error-message')) {
+                        errorElement.style.display = 'none';
+                    }
+                }
+            });
         });
     </script>
 </body>
