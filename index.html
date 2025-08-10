@@ -256,7 +256,7 @@
         
         <!-- Английская версия (изначально скрыта) -->
         <div id="en-content" style="display: none;">
-            <h1>In-hospital mortality risk calculator for non-ST-elevation acute coronary syndrome (NSTE-ACS)</h1>
+            <h1>Non-ST-segment elevation acute coronary syndrome in-hospital mortality calculator</h1>
             
             <!-- Модель 1 -->
             <div class="model-section" id="model1-section-en">
@@ -267,7 +267,7 @@
                     <div class="error-message">This field is required</div>
                 </div>
                 <div class="form-group">
-                    <label for="killip-en">Acute Heart Failure (AHF) <span class="units">(Killip class)</span>:</label>
+                    <label for="killip-en">Acute Heart Failure (AHF):</label>
                     <select id="killip-en" name="killip-en">
                         <option value="">-- Select --</option>
                         <option value="1">I (no AHF)</option>
@@ -381,7 +381,7 @@
             <div class="model-section" id="model4-section-en">
                 <h2 class="model-title">During hospitalization</h2>
                 <div class="form-group">
-                    <label for="hospitalPneumonia-en">Nosocomial pneumonia:</label>
+                    <label for="hospitalPneumonia-en">Hospital-Acquired Pneumonia (HAP):</label>
                     <select id="hospitalPneumonia-en" name="hospitalPneumonia-en">
                         <option value="">-- Select --</option>
                         <option value="0">No</option>
@@ -489,6 +489,24 @@
                 }
             });
 
+	    // Дополнительная проверка для моделей 2, 3 и 4
+            if (modelNumber >= 2 && modelNumber <= 4) {
+                const pneumoniaFieldId = lang === 'ru' ? 'communityPneumonia' : 'communityPneumonia-en';
+                const pneumoniaField = document.getElementById(pneumoniaFieldId);
+                const pneumoniaValue = pneumoniaField.value;
+            
+                if (pneumoniaValue === 'None') {
+                    pneumoniaField.classList.add('error');
+                    // Найдем элемент для сообщения об ошибке (он следующий за полем)
+                    const pneumoniaErrorElement = pneumoniaField.nextElementSibling;
+                    pneumoniaErrorElement.textContent = lang === 'ru' 
+                        ? 'Для расчета необходимо указать наличие или отсутствие внебольничной пневмонии' 
+                        : 'Community-acquired pneumonia status must be specified (yes or no)';
+                    pneumoniaErrorElement.style.display = 'block';
+                    isValid = false;
+                }
+            }
+
             return isValid;
         }
 
@@ -568,30 +586,90 @@
         }
 
         function sendData(data, lang = 'ru') {
-            console.log('Отправка данных на сервер:', data);
+            // Подготавливаем данные для отправки в формате, который ожидает бэкенд
+            let features = [];
             
-            // Здесь будет реальная отправка данных на сервер
-            // Пример:
-            /*
-            fetch('/api/calculate', {
+            // Всегда добавляем данные модели 1 (11 параметров)
+            features.push(
+                data.model1.age,
+                data.model1.killip,
+                data.model1.sad,
+                data.model1.heartRate,
+                data.model1.bmi,
+                data.model1.communityPneumonia,
+                data.model1.weakness,
+                data.model1.charlson,
+                data.model1.familyHistory,
+                data.model1.dryWheezing,
+                data.model1.consciousnessLoss
+            );
+            
+            // Если есть данные модели 2, добавляем 2 параметра (итого 13)
+            if (data.model2) {
+                features.push(
+                    data.model2.creatinine,
+                    data.model2.hematocrit
+                );
+            }
+            
+            // Если есть данные модели 3, добавляем 1 параметр (итого 14)
+            if (data.model3) {
+                features.push(data.model3.lvDysfunction);
+            }
+            
+            // Если есть данные модели 4, добавляем 1 параметр (итого 15)
+            if (data.model4) {
+                features.push(data.model4.hospitalPneumonia);
+            }
+            
+            // Формируем объект для отправки
+            const requestData = {
+                features: features
+            };
+            
+	    const apiUrl = 'http://localhost:5000/predict';  // ← Замените на ваш URL!
+
+            // Отправляем данные на сервер
+            fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
             })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log("Результат:", responseData);
-                alert(`Результат расчета: ${responseData.result}`);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(lang === 'ru' ? 'Ошибка сети или сервера' : 'Network or server error');
+                }
+                return response.json();
+            })
+            .then(result => {
+                // Форматируем результат для отображения
+                const probabilityPercent = (result.probability * 100).toFixed(2);
+                let message;
+                
+                if (lang === 'ru') {
+                    message = `Вероятность летального исхода: ${probabilityPercent}%\n` +
+                              `Уровень риска: ${result.risk}`;
+                } else {
+                    // Переводим русские категории риска на английский
+                    let riskEn;
+                    if (result.risk === 'Высокий риск') riskEn = 'High risk';
+                    else if (result.risk === 'Средний риск') riskEn = 'Medium risk';
+                    else riskEn = 'Low risk';
+                    
+                    message = `Mortality probability: ${probabilityPercent}%\n` +
+                              `Risk level: ${riskEn}`;
+                }
+                
+                alert(message);
             })
             .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при расчете');
+                console.error('Error:', error);
+                alert(lang === 'ru' 
+                    ? 'Произошла ошибка при расчете. Пожалуйста, попробуйте позже.'
+                    : 'An error occurred during calculation. Please try again later.');
             });
-            */
-            
-            alert(lang === 'ru' 
-                ? `Данные для моделей 1-${data.targetModel} отправлены на сервер.\nПроверьте консоль для деталей.`
-                : `Data for model ${data.targetModel} sent to server.\n`);
         }
 
         // Добавляем обработчики для сброса ошибок при вводе
